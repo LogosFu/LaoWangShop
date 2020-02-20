@@ -2,31 +2,24 @@ package cc.xpbootcamp.warmup.cashier;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.Value;
 
 @Builder
 @Value(staticConstructor = "of")
 @AllArgsConstructor
+@Getter
 public class LineItem {
 
   private String desc;
   private double price;
-  private int qty;
+  private int quantity;
 
   double totalAmount() {
-    return price * qty;
+    return price * quantity;
   }
 
-  String getLineInfo() {
-    return desc
-        + Separator.COMMA.getValue()
-        + price
-        + "*"
-        + qty
-        + Separator.COMMA.getValue()
-        + totalAmount()
-        + Separator.LINE_BREAK.getValue();
-  }
+
 
   double getSalesTax() {
     return totalAmount() * .10;

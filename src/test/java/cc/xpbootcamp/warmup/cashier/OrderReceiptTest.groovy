@@ -3,13 +3,14 @@ package cc.xpbootcamp.warmup.cashier
 import spock.lang.Specification
 import java.time.LocalDate
 
-class OrderTest extends Specification {
+class OrderReceiptTest extends Specification {
 
     def "should print 7 line when get bill given no line order"() {
         given:
         def order = Order.builder().date(LocalDate.parse("2020-02-17")).lineItemList(new ArrayList<LineItem>()).build()
+        def orderReceipt = new OrderReceipt(order);
         when:
-        def bill = order.getBill()
+        def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
         resultLine.size() == 7
@@ -18,8 +19,9 @@ class OrderTest extends Specification {
     def "should print2020年2月17日，星期一 when get bill receipt given date 2020-02-17"() {
         given:
         def order = Order.builder().date(LocalDate.parse("2020-02-17")).lineItemList(new ArrayList<LineItem>()).build()
+        def orderReceipt = new OrderReceipt(order);
         when:
-        def bill = order.getBill()
+        def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
         resultLine[2] == "2020年2月17日，星期一"
@@ -28,8 +30,9 @@ class OrderTest extends Specification {
     def "should print====老王超市，值得信赖==== when get bill receipt given order"() {
         given:
         def order = Order.builder().date(LocalDate.parse("2020-02-17")).lineItemList(new ArrayList<LineItem>()).build()
+        def orderReceipt = new OrderReceipt(order);
         when:
-        def bill = order.getBill()
+        def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
         resultLine[0] == "====老王超市，值得信赖===="
@@ -38,8 +41,9 @@ class OrderTest extends Specification {
     def "should print税额: 0 when get bill receipt given order"() {
         given:
         def order = Order.builder().date(LocalDate.parse("2020-02-17")).lineItemList(new ArrayList<LineItem>()).build()
+        def orderReceipt = new OrderReceipt(order);
         when:
-        def bill = order.getBill()
+        def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
         resultLine[5] == "税额:\t0.0"
@@ -48,8 +52,9 @@ class OrderTest extends Specification {
     def "should print总价: 0 when get bill receipt given order"() {
         given:
         def order = Order.builder().date(LocalDate.parse("2020-02-17")).lineItemList(new ArrayList<LineItem>()).build()
+        def orderReceipt = new OrderReceipt(order);
         when:
-        def bill = order.getBill()
+        def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
         resultLine[6] == "总价:\t0.0"
@@ -61,8 +66,9 @@ class OrderTest extends Specification {
                 .lineItemList([new LineItem("milk", 10.0, 2),
                                new LineItem("biscuits", 5.0, 5),
                                new LineItem("chocolate", 20.0, 1)]).build()
+        def orderReceipt = new OrderReceipt(order);
         when:
-        def bill = order.getBill()
+        def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
         resultLine.size() == 10
@@ -77,8 +83,9 @@ class OrderTest extends Specification {
                 .lineItemList([new LineItem("milk", 10.0, 2),
                                new LineItem("biscuits", 5.0, 5),
                                new LineItem("chocolate", 20.0, 1)]).build()
+        def orderReceipt = new OrderReceipt(order);
         when:
-        def bill = order.getBill()
+        def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
         resultLine.size() == 10
@@ -93,8 +100,9 @@ class OrderTest extends Specification {
                 .lineItemList([new LineItem("milk", 10.0, 2),
                                new LineItem("biscuits", 5.0, 5),
                                new LineItem("chocolate", 20.0, 1)]).build()
+        def orderReceipt = new OrderReceipt(order);
         when:
-        def bill = order.getBill()
+        def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
         resultLine.size() == 11
