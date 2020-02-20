@@ -18,13 +18,14 @@ class OrderReceiptTest extends Specification {
 
     def "should print2020年2月17日，星期一 when get bill receipt given date 2020-02-17"() {
         given:
-        def order = Order.builder().date(LocalDate.parse("2020-02-17")).lineItemList(new ArrayList<LineItem>()).build()
+        def order = Order.builder().date(LocalDate.parse("2020-02-17"))
+                .lineItemList(new ArrayList<LineItem>()).build()
         def orderReceipt = new OrderReceipt(order);
         when:
         def bill = orderReceipt.printReceipt()
         def resultLine = bill.split(Separator.LINE_BREAK.getValue())
         then:
-        resultLine[2] == "2020年2月17日，星期一"
+        resultLine[2] == "2020年2月17日, 星期一"
     }
 
     def "should print====老王超市，值得信赖==== when get bill receipt given order"() {
@@ -112,7 +113,7 @@ class OrderReceiptTest extends Specification {
 
         resultLine[7] == Separator.DOTTED_LINE.getValue()
         resultLine[8] == "税额:\t6.5"
-        resultLine[9] == "折扣:\t1.43"
-        resultLine[10] == "总价:\t70.07"
+        resultLine[9] == "折扣:\t1.430"
+        resultLine[10] == "总价:\t70.070"
     }
 }

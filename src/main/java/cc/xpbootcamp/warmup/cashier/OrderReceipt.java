@@ -1,10 +1,8 @@
 package cc.xpbootcamp.warmup.cashier;
 
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import lombok.Builder.Default;
 
 /**
  * OrderReceipt prints the details of order including customer name, address, description, quantity,
@@ -13,7 +11,6 @@ import lombok.Builder.Default;
  */
 public class OrderReceipt {
 
-  private static final double DISCOUNT_RATE = 0.02;
   private Order order;
 
   public OrderReceipt(Order order) {
@@ -33,38 +30,23 @@ public class OrderReceipt {
     return "====老王超市，值得信赖===="
         + Separator.LINE_BREAK.getValue()
         + Separator.LINE_BREAK.getValue()
-        + order.getDate().format(DateTimeFormatter.ofPattern("yyyy年M月dd日")) + "，"
-        + order.getDate().getDayOfWeek().getDisplayName(TextStyle.FULL_STANDALONE, Locale.CHINESE)
+        + order.getDate().format(DateTimeFormatter.ofPattern("yyyy年M月dd日, EEEE", Locale.CHINESE))
         + Separator.LINE_BREAK.getValue();
   }
 
   private String buildLineItemInfo() {
-    return order.getLineItemList().stream().map(this::getLineInfo)
+    return order.getLineItemList().stream()
+        .map(this::getLineInfo)
         .collect(Collectors.joining());
   }
-
   private String buildOrderFooter() {
-    return isWednesday() ? discountTotalInfo() : normalTotalInfo();
-  }
-
-  private boolean isWednesday() {
-    return order.getDate().getDayOfWeek().getValue() == 3;
-  }
-
-  private String discountTotalInfo() {
     return "税额:" + Separator.SPACES.getValue() + order.getSalesTx()
         + Separator.LINE_BREAK.getValue()
-        + "折扣:" + Separator.SPACES.getValue() + order.getTotalPrice() * DISCOUNT_RATE
-        + Separator.LINE_BREAK.getValue()
-        + "总价:" + Separator.SPACES.getValue() + order.getTotalPrice() * (1 - DISCOUNT_RATE);
+        + (order.discountStatus() ? ("折扣:" + Separator.SPACES.getValue() + order.getDiscountPrice()
+        + Separator.LINE_BREAK.getValue())
+        : "")
+        + "总价:" + Separator.SPACES.getValue() + order.getSellingPrice();
   }
-
-  private String normalTotalInfo() {
-    return "税额:" + Separator.SPACES.getValue() + order.getSalesTx()
-        + Separator.LINE_BREAK.getValue()
-        + "总价:" + Separator.SPACES.getValue() + order.getTotalPrice();
-  }
-
 
   private String getLineInfo(LineItem lineItem) {
     return lineItem.getDesc()
