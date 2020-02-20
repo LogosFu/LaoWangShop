@@ -2,11 +2,12 @@ package cc.xpbootcamp.warmup.cashier;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
+import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Optional;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Data;
 
 @Data
@@ -17,6 +18,8 @@ public class Order {
   private String addr;
   private LocalDate date;
   private List<LineItem> lineItemList;
+  @Default
+  private static final double DISCOUNT_RATE = 0.02;
 
   public Order(String cName, String addr, LocalDate date, List<LineItem> lineItemList) {
     this.cName = cName;
@@ -54,9 +57,9 @@ public class Order {
   private String discountTotalInfo() {
     return "税额:" + Separator.SPACES.getValue() + getSalesTx()
         + Separator.LINE_BREAK.getValue()
-        + "折扣:" + Separator.SPACES.getValue() + getTotalPrice() * 0.02
+        + "折扣:" + Separator.SPACES.getValue() + getTotalPrice() * DISCOUNT_RATE
         + Separator.LINE_BREAK.getValue()
-        + "总价:" + Separator.SPACES.getValue() + getTotalPrice() * 0.98;
+        + "总价:" + Separator.SPACES.getValue() + getTotalPrice() * (1 - DISCOUNT_RATE);
   }
 
   private String normalTotalInfo() {
@@ -81,14 +84,10 @@ public class Order {
   }
 
   private String formatDate() {
-    return date.format(DateTimeFormatter.ofPattern("yyyy年M月dd日")) + "，星期" + getWeekOfDay();
+    return date.format(DateTimeFormatter.ofPattern("yyyy年M月dd日")) + "，" + getWeekOfDay();
   }
 
   private String getWeekOfDay() {
-    String[][] strArray = {{"MONDAY", "一"}, {"TUESDAY", "二"}, {"WEDNESDAY", "三"}, {"THURSDAY", "四"},
-        {"FRIDAY", "五"}, {"SATURDAY", "六"}, {"SUNDAY", "日"}};
-    final Optional<String[]> matchDay = Arrays.stream(strArray)
-        .filter(string -> String.valueOf(date.getDayOfWeek()).equals(string[0])).findAny();
-    return matchDay.map(strings -> strings[1]).orElseThrow(RuntimeException::new);
+    return date.getDayOfWeek().getDisplayName(TextStyle.FULL_STANDALONE, Locale.CHINESE);
   }
 }
