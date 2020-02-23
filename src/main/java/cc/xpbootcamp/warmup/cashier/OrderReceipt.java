@@ -1,5 +1,7 @@
 package cc.xpbootcamp.warmup.cashier;
 
+import static java.lang.String.*;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -12,50 +14,45 @@ import java.util.stream.Collectors;
 public class OrderReceipt {
 
   private Order order;
+  private static final String HEADER = "====老王超市，值得信赖====";
 
   public OrderReceipt(Order order) {
     this.order = order;
   }
 
   public String printReceipt() {
-    return buildOrderHeader()
-        + Separator.LINE_BREAK.getValue()
-        + buildLineItemInfo()
-        + Separator.DOTTED_LINE.getValue()
-        + Separator.LINE_BREAK.getValue()
-        + buildOrderFooter();
+
+    return BillingPrinter.builder()
+        .header(HEADER)
+        .date(formateDate())
+        .content(formatContent())
+        .summary(formatSummary())
+        .build().printBilling();
   }
 
-  private String buildOrderHeader() {
-    return "====老王超市，值得信赖===="
-        + Separator.LINE_BREAK.getValue()
-        + Separator.LINE_BREAK.getValue()
-        + order.getDate().format(DateTimeFormatter.ofPattern("yyyy年M月dd日, EEEE", Locale.CHINESE))
-        + Separator.LINE_BREAK.getValue();
+  private String formateDate() {
+    return order.getDate().format(DateTimeFormatter.ofPattern("yyyy年M月dd日, EEEE", Locale.CHINESE));
   }
 
-  private String buildLineItemInfo() {
+  private String formatContent() {
     return order.getLineItemList().stream()
         .map(this::getLineInfo)
         .collect(Collectors.joining());
   }
-  private String buildOrderFooter() {
-    return "税额:" + Separator.SPACES.getValue() + order.getSalesTx()
-        + Separator.LINE_BREAK.getValue()
-        + (order.discountStatus() ? ("折扣:" + Separator.SPACES.getValue() + order.getDiscountPrice()
-        + Separator.LINE_BREAK.getValue())
-        : "")
-        + "总价:" + Separator.SPACES.getValue() + order.getSellingPrice();
+
+  private String formatSummary() {
+    if (order.discountStatus()) {
+      return format("税额: %s%n折扣: %s%n总价: %s", order.countSalesTx(), order.countDiscountPrice(),
+          order.countSellingPrice());
+    } else {
+      return format("税额: %s%n总价: %s", order.countSalesTx(), order.countSellingPrice());
+    }
   }
 
   private String getLineInfo(LineItem lineItem) {
-    return lineItem.getDesc()
-        + Separator.COMMA.getValue()
-        + lineItem.getPrice()
-        + "*"
-        + lineItem.getQuantity()
-        + Separator.COMMA.getValue()
-        + lineItem.totalAmount()
-        + Separator.LINE_BREAK.getValue();
+    return String
+        .format("%s,%s*%s,%s%n", lineItem.getDesc(), lineItem.getPrice(), lineItem.getQuantity(),
+            lineItem.totalAmount());
+
   }
 }

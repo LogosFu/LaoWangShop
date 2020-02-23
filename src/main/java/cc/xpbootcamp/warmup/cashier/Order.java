@@ -33,28 +33,28 @@ public class Order {
     this.date = date;
   }
 
-  public BigDecimal getSalesTx() {
+  public boolean discountStatus() {
+    return date.getDayOfWeek() == WEDNESDAY;
+  }
+
+  public BigDecimal countSalesTx() {
     return BigDecimal.valueOf(lineItemList.stream().mapToDouble(LineItem::getSalesTax).sum());
   }
 
-  public BigDecimal getDiscountPrice() {
+  public BigDecimal countDiscountPrice() {
     if (discountStatus()) {
-      discountPrice = this.getTotalPrice().multiply(BigDecimal.valueOf(0.02));
+      discountPrice = this.countTotalPrice().multiply(BigDecimal.valueOf(0.02));
     }
     return discountPrice;
   }
 
-  public BigDecimal getSellingPrice() {
-    return getTotalPrice().subtract(getDiscountPrice());
+  public BigDecimal countSellingPrice() {
+    return countTotalPrice().subtract(countDiscountPrice());
   }
 
-  public BigDecimal getTotalPrice() {
+  private BigDecimal countTotalPrice() {
     return BigDecimal.valueOf(lineItemList.stream()
         .mapToDouble(item -> item.totalAmount() + item.getSalesTax())
         .sum());
-  }
-
-  public boolean discountStatus() {
-    return date.getDayOfWeek() == WEDNESDAY;
   }
 }
